@@ -1,36 +1,56 @@
 "use client";
+import { useState, useEffect } from "react";
+import ProtectedRoute from "../components/ProtectedRoute";
+import StudyBlockForm from "./StudyBlockForm";
+import StudyBlockList from "./StudyBlockList";
 import { supabase } from "../lib/supabaseClient";
 
-export default function StudyBlockList({ blocks = [], refresh }) {
-  async function deleteBlock(id) {
+export default function DashboardPage() {
+  const [blocks, setBlocks] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  async function fetchBlocks() {
+    setLoading(true);
     const { data } = await supabase.auth.getSession();
     const token = data?.session?.access_token;
-    await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000/api"}/blocks/${id}`, {
-      method: "DELETE",
+    if (!token) {
+      setBlocks([]);
+      setLoading(false);
+      return;
+    }
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000"}/api/blocks`, {
       headers: { Authorization: `Bearer ${token}` },
     });
-    await refresh();
+    if (response.ok) {
+      const json = await response.json();
+      setBlocks(json);
+    } else {
+      setBlocks([]);
+    }
+    setLoading(false);
   }
 
-  if (!blocks || blocks.length === 0) {
-    return <p className="text-center text-gray-500">No silent-study blocks yet.</p>;
-  }
+  useEffect(() => {
+    fetchBlocks();
+  }, []);
 
   return (
-    <div className="grid gap-4 max-w-3xl mx-auto">
-      {blocks.map(({ _id, blockStart, blockEnd }) => (
-        <div key={_id} className="card p-4 rounded-lg flex items-center justify-between shadow-sm hover:shadow-lg transition">
-          <div>
-            <div className="text-sm text-gray-500">Start</div>
-            <div className="font-semibold">{new Date(blockStart).toLocaleString()}</div>
-            <div className="text-sm text-gray-500 mt-2">End</div>
-            <div className="font-semibold">{new Date(blockEnd).toLocaleString()}</div>
-          </div>
-          <div className="flex flex-col gap-2 items-end">
-            <button className="btn-danger" onClick={() => deleteBlock(_id)}>Delete</button>
-          </div>
+    <ProtectedRoute>
+      <div className="container py-12">
+        <h2 className="text-3xl font-extrabold mb-6">Your Silent-Study Blocks</h2>
+
+        <div className="max-w-xl mx-auto mb-8">
+          <StudyBlockForm onSuccess={fetchBlocks} />
         </div>
-      ))}
-    </div>
+
+        <div>
+          {loading ? (
+            <div className="text-center py-12 text-gray-500">Loading blocks...</div>
+          ) : (
+            <StudyBlockList blocks={blocks} refresh={fetchBlocks} />
+          )}
+        </div>
+      </div>
+    </ProtectedRoute>
   );
 }
