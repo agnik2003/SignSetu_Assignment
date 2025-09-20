@@ -19,7 +19,7 @@ export default function StudyBlockForm({ onSuccess }) {
     try {
       const { data } = await supabase.auth.getSession();
       const token = data?.session?.access_token;
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000/api"}/blocks`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000"}/api/blocks`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({ blockStart, blockEnd }),
