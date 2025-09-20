@@ -12,7 +12,7 @@ app.use(express.json());
 
 
 const corsOptions = {
-  origin: 'http://localhost:3000',
+  origin: 'https://sign-setu-assignment-gilt.vercel.app',
   optionsSuccessStatus: 200,
 };
 app.use(cors(corsOptions));
