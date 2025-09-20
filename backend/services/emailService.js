@@ -11,7 +11,8 @@ const transporter = nodemailer.createTransport({
 function sendNotificationMail(to, blockStart) {
   const frontendBaseUrl = process.env.FRONTEND_BASE_URL || 'http://localhost:3000';
 
-  const url = `${frontendBaseUrl}/some-path`; // Customize path if needed
+  // Example: You can include any link you want the user to visit in email notifications.
+  const link = `${frontendBaseUrl}/blocks`; // Adjust path as necessary
 
   const mailOptions = {
     from: process.env.EMAIL_USER,
@@ -19,7 +20,7 @@ function sendNotificationMail(to, blockStart) {
     subject: 'Quiet Study Time Reminder',
     html: `
       <p>Your silent-study block starts at ${blockStart.toLocaleString()}. Get ready to focus!</p>
-      <p><a href="${url}">Click here to view your study block</a></p>
+      <p><a href="${link}">View your study blocks</a></p>
     `,
   };
 
