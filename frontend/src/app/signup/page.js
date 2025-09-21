@@ -26,12 +26,19 @@ export default function Signup() {
 
     setLoading(true);
 
+    // DEBUG: Log environment variable value to browser console
+    console.log("DEBUG: NEXT_PUBLIC_REDIRECT_URL", process.env.NEXT_PUBLIC_REDIRECT_URL);
+
+    // Use environment variable or fallback to hardcoded URL
+    const redirectUrl =
+      process.env.NEXT_PUBLIC_REDIRECT_URL || "https://sign-setu-assignment-gilt.vercel.app";
+
     const { error } = await supabase.auth.signUp({
       email,
       password,
       options: {
         data: { name },
-            emailRedirectTo: `${process.env.NEXT_PUBLIC_REDIRECT_URL || window.location.origin}/dashboard`,
+        emailRedirectTo: `${redirectUrl}/dashboard`,
       },
     });
 
@@ -55,7 +62,6 @@ export default function Signup() {
         className="card max-w-md w-full p-8"
       >
         <h1 className="text-2xl font-bold mb-4">Create an account</h1>
-
         <label className="block mb-3">
           <span className="text-sm font-medium text-gray-700">Name</span>
           <input
@@ -66,7 +72,6 @@ export default function Signup() {
             required
           />
         </label>
-
         <label className="block mb-3">
           <span className="text-sm font-medium text-gray-700">Email</span>
           <input
@@ -77,7 +82,6 @@ export default function Signup() {
             required
           />
         </label>
-
         <label className="block mb-3">
           <span className="text-sm font-medium text-gray-700">Password</span>
           <input
@@ -88,11 +92,8 @@ export default function Signup() {
             required
           />
         </label>
-
         <label className="block mb-4">
-          <span className="text-sm font-medium text-gray-700">
-            Confirm Password
-          </span>
+          <span className="text-sm font-medium text-gray-700">Confirm Password</span>
           <input
             type="password"
             value={confirmPassword}
@@ -101,14 +102,11 @@ export default function Signup() {
             required
           />
         </label>
-
         {error && <div className="text-red-600 mb-3">{error}</div>}
         {success && <div className="text-green-600 mb-3">{success}</div>}
-
         <button disabled={loading} type="submit" className="btn-primary w-full">
           {loading ? "Signing up..." : "Sign Up"}
         </button>
-
         <p className="mt-4 text-center text-gray-600 text-sm">
           Already have an account?{" "}
           <a href="/login" className="text-purple-600 font-medium">
