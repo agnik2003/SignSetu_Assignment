@@ -31,7 +31,7 @@ export default function Signup() {
       password,
       options: {
         data: { name },
-        emailRedirectTo: `${window.location.origin}/dashboard`, 
+            emailRedirectTo: `${process.env.NEXT_PUBLIC_REDIRECT_URL || window.location.origin}/dashboard`,
       },
     });
 
